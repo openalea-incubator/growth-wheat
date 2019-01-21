@@ -35,15 +35,14 @@ HIDDENZONE_INPUTS = ['leaf_is_growing', 'internode_is_growing','leaf_pseudo_age'
                      'leaf_pseudostem_length',
                      'delta_leaf_pseudostem_length', 'internode_distance_to_emerge', 'delta_internode_distance_to_emerge', 'SSLW', 'LSSW', 'LSIW', 'leaf_is_emerged', 'internode_is_visible',
                      'sucrose', 'amino_acids', 'fructan', 'proteins', 'leaf_enclosed_mstruct', 'leaf_enclosed_Nstruct', 'internode_enclosed_mstruct',
-                     'internode_enclosed_Nstruct', 'mstruct','internode_Lmax','leaf_Lmax']
+                     'internode_enclosed_Nstruct', 'mstruct','internode_Lmax','leaf_Lmax','is_over']
 ELEMENT_INPUTS = ['is_growing', 'mstruct', 'green_area', 'length', 'sucrose', 'amino_acids', 'fructan', 'proteins', 'cytokinins','Nstruct']
 ROOT_INPUTS = ['sucrose', 'amino_acids', 'mstruct', 'Nstruct']
 SAM_INPUTS = ['delta_teq','delta_teq_roots']
 
 #: the outputs computed by GrowthWheat
 HIDDENZONE_OUTPUTS = ['sucrose', 'amino_acids', 'fructan', 'proteins', 'leaf_enclosed_mstruct', 'leaf_enclosed_Nstruct', 'internode_enclosed_mstruct', 'internode_enclosed_Nstruct', 'mstruct',
-                      'Nstruct',
-                      'Respi_growth', 'sucrose_consumption_mstruct', 'AA_consumption_mstruct']
+                      'Nstruct','Respi_growth', 'sucrose_consumption_mstruct', 'AA_consumption_mstruct','is_over']
 ELEMENT_OUTPUTS = ['sucrose', 'amino_acids', 'fructan', 'proteins', 'mstruct', 'Nstruct', 'green_area']
 ROOT_OUTPUTS = ['sucrose', 'amino_acids', 'mstruct', 'Nstruct', 'Respi_growth', 'rate_mstruct_growth','sucrose_consumption_mstruct', 'AA_consumption_mstruct']
 
@@ -311,10 +310,10 @@ class Simulation(object):
                     curr_hidden_internode_outputs['is_growing'] = False
                     self.outputs['elements'][hidden_internode_id] = curr_hidden_internode_outputs
 
-                #: Delete Hiddenzone after remobilisation so it is not sent to CN Wheat
+                #: Turn the flag to true after remobilisation in order to Delete Hiddenzone in both MTG and shared_outputs
                 if not hiddenzone_inputs['leaf_is_growing'] and not hiddenzone_inputs['internode_is_growing'] \
                     and hiddenzone_inputs['delta_leaf_L'] == 0 and hiddenzone_inputs['delta_internode_L'] == 0 :
-                    del self.outputs['hiddenzone'][hiddenzone_id]
+                    self.outputs['hiddenzone'][hiddenzone_id]['is_over'] = True
 
         # Roots
         for root_id, root_inputs in all_roots_inputs.items():
