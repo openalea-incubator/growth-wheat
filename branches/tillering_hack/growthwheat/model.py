@@ -25,21 +25,45 @@ import numpy as np
         $Id$
 """
 
+def calculate_ratio_mstruct_DM(mstruct, sucrose, fructans, amino_acids, proteins):
+    """ Ratio mstruct/dry matter (dimensionless)
 
-def calculate_delta_leaf_enclosed_mstruct(leaf_L, delta_leaf_L):
+        :Parameters:
+            - `mstruct` (:class:`float`) - Strutural mass (g)
+            - `sucrose` (:class:`float`) - Sucrose amount (µmol C)
+            - `fructans` (:class:`float`) - Fructans amount (µmol C)
+            - `amino_acids` (:class:`float`) - Amino acids amount (µmol N)
+            - `proteins` (:class:`float`) - Proteins amount (µmol N)
+        :Returns:
+            Ratio mstruct/dry matter (dimensionless)
+        :Returns Type:
+            :class:`float`
+        """
+    C_MOLAR_MASS = parameters.C_MOLAR_MASS
+    N_MOLAR_MASS = parameters.N_MOLAR_MASS
+    dry_mass = ((sucrose * 1E-6 * C_MOLAR_MASS) / parameters.HEXOSE_MOLAR_MASS_C_RATIO +
+           (fructans * 1E-6 * C_MOLAR_MASS) / parameters.HEXOSE_MOLAR_MASS_C_RATIO +
+           (amino_acids * 1E-6 * N_MOLAR_MASS) / parameters.AMINO_ACIDS_MOLAR_MASS_N_RATIO +
+           (proteins * 1E-6 * N_MOLAR_MASS) / parameters.AMINO_ACIDS_MOLAR_MASS_N_RATIO +
+           mstruct)
+
+    return mstruct/dry_mass
+
+def calculate_delta_leaf_enclosed_mstruct(leaf_L, delta_leaf_L, ratio_mstruct_DM):
     """ Relation between length and mstruct for the leaf segment located in the hidden zone during the exponential-like growth phase.
-    Parameters alpha_mass_growth and beta_mass_growth estimated from Williams (1975) and expressed in g of dry mass. #TODO : Check the ref (Williams 1960?)
-    Parameter RATIO_MSTRUCT_DM is then used to convert in g of structural dry mass.
+    Parameters alpha_mass_growth and beta_mass_growth estimated from Williams (1960) and expressed in g of dry mass)
+    The actual ratio_mstruct_DM is then used to convert in g of structural dry mass.
 
     :Parameters:
         - `leaf_L` (:class:`float`) - Total leaf length (m)
         - `delta_leaf_L` (:class:`float`) - delta of leaf length (m)
+        - `ratio_mstruct_DM` (:class:`float`) - Ratio mstruct/dry matter (dimensionless)
     :Returns:
         delta_leaf_enclosed_mstruct (g)
     :Returns Type:
         :class:`float`
     """
-    return parameters.ALPHA * parameters.BETA * leaf_L**(parameters.BETA-1) * delta_leaf_L * parameters.RATIO_MSTRUCT_DM
+    return parameters.ALPHA * parameters.BETA * leaf_L**(parameters.BETA-1) * delta_leaf_L * ratio_mstruct_DM
 
 def calculate_delta_leaf_enclosed_mstruct_postE(delta_leaf_pseudo_age, leaf_pseudo_age,leaf_pseudostem_L, enclosed_mstruct, LSSW):
     """ mstruct of the enclosed leaf from the emergence of the leaf to the end of elongation.
@@ -68,23 +92,23 @@ def calculate_delta_leaf_enclosed_mstruct_postE(delta_leaf_pseudo_age, leaf_pseu
 
     return delta_enclosed_mstruct
 
-def calculate_delta_internode_enclosed_mstruct(internode_L, delta_internode_L):
+def calculate_delta_internode_enclosed_mstruct(internode_L, delta_internode_L, ratio_mstruct_DM):
     """ Relation between length and mstruct for the internode segment located in the hidden zone.
     Same relationship than for enclosed leaf corrected by RATIO_ENCLOSED_LEAF_INTERNODE.
     Parameters alpha_mass_growth and beta_mass_growth estimated from Williams (1975) and expressed in g of dry mass.
-    Parameter RATIO_MSTRUCT_DM is then used to convert in g of structural dry mass.
+    The actual ratio_mstruct_DM is then used to convert in g of structural dry mass.
 
     :Parameters:
         - `internode_L` (:class:`float`) - Enclosed internode length (m)
         - `delta_internode_L` (:class:`float`) - delta of enclosed internode length (m)
+        - `ratio_mstruct_DM` (:class:`float`) - Ratio mstruct/dry matter (dimensionless)
     :Returns:
         delta_enclosed_internode_mstruct (g)
     :Returns Type:
         :class:`float`
     """
-    # TODO: internode mstruct should increase to meet internode_L * LINW at the end of its elongation(like leaf). However, since an internode might never emerge, its mstruct should increase from the end of its exponential-like phase.
 
-    return parameters.RATIO_ENCLOSED_LEAF_INTERNODE * parameters.ALPHA * parameters.BETA * internode_L**(parameters.BETA-1) * delta_internode_L * parameters.RATIO_MSTRUCT_DM
+    return parameters.RATIO_ENCLOSED_LEAF_INTERNODE * parameters.ALPHA * parameters.BETA * internode_L**(parameters.BETA-1) * delta_internode_L * ratio_mstruct_DM
 
 def calculate_delta_internode_enclosed_mstruct_postL(delta_internode_pseudo_age, internode_pseudo_age, internode_L, internode_pseudostem_L, internode_Lmax, LSIW, enclosed_mstruct):
     """ mstruct of the enclosed internode from the ligulation of the leaf to the end of elongation.
@@ -176,9 +200,9 @@ def calculate_cytokinins(delta_mstruct, cytokinins, mstruct):
     """
     # default initial value
     if mstruct == 0:
-        res = delta_mstruct * 120.0 # TODO: Set according to protein concentration ?
+        res = delta_mstruct * 200 # TODO: Set according to protein concentration ?
     else:
-        res = delta_mstruct *  (cytokinins / mstruct)
+        res = delta_mstruct * 200#  (cytokinins / mstruct)
     return res
 
 def calculate_s_Nstruct_amino_acids(delta_hiddenzone_Nstruct, delta_lamina_Nstruct, delta_sheath_Nstruct):

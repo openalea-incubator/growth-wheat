@@ -27,6 +27,10 @@ N_MOLAR_MASS = 14                     #: Nitrogen molar mass (g mol-1)
 
 CONVERSION_FACTOR_20_TO_12 = 0.45     #: modified_Arrhenius_equation(12)/modified_Arrhenius_equation(20)
 
+HEXOSE_MOLAR_MASS_C_RATIO = 0.42       #: Contribution of C in hexose mass
+PROTEINS_MOLAR_MASS_N_RATIO = 0.151    #: Mean contribution of N in protein mass (Penning De Vries 1989)
+AMINO_ACIDS_MOLAR_MASS_N_RATIO = 0.135 #: Mean contribution of N in amino acids mass of the major amino acids of plants (Glu, Gln, Ser, Asp, Ala, Gly)
+
 # Shoot
 ALPHA = 0.106  # 1.537e-02            #: Parameter of the relation between leaf mass and leaf length (g m^(-BETA))
 BETA = 1.28                           #: Parameter of the relation between leaf mass and leaf length (dimensionless)
@@ -59,6 +63,7 @@ class OrganInit:
     """
     def __init__(self):
         self.is_growing = True
+        self.senesced_length = 0      #: m
         self.green_area = 0
         self.sucrose = 0              #: µmol C
         self.amino_acids = 0          #: µmol N
@@ -66,6 +71,6 @@ class OrganInit:
         self.proteins = 0             #: µmol N
         self.mstruct = 0              #: g
         self.Nstruct = 0              #: g
+        self.Nresidual = 0            #: g
         self.cytokinins = 0           #: g
-        self.conc_cytokinins = 120.0  #: AU / g mstruct # Not used
-        self.max_proteins = 0
+        self.conc_cytokinins = 200.0  #: AU / g mstruct # Not used
