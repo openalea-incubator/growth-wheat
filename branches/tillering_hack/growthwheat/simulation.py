@@ -131,8 +131,9 @@ class Simulation(object):
             #: Main stem
             else :
                 # Initialisation of the exports towards the growing lamina or sheath
-                delta_leaf_enclosed_mstruct, delta_leaf_enclosed_Nstruct, delta_lamina_mstruct, delta_sheath_mstruct, delta_lamina_Nstruct, delta_sheath_Nstruct, export_sucrose, export_amino_acids =\
-                    0, 0, 0, 0, 0, 0, 0, 0
+                delta_leaf_enclosed_mstruct, delta_leaf_enclosed_Nstruct, delta_lamina_mstruct, delta_sheath_mstruct, delta_lamina_Nstruct, delta_sheath_Nstruct, \
+                export_sucrose, export_amino_acids, remob_fructan, export_proteins   =\
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
                 # Delta Growth internode
 
@@ -207,7 +208,7 @@ class Simulation(object):
                         # Export of metabolite from hiddenzone towards emerged lamina
                         export_sucrose = model.calculate_export(delta_lamina_mstruct, hiddenzone_inputs['sucrose'], hiddenzone_inputs['mstruct'])
                         export_amino_acids = model.calculate_export(delta_lamina_mstruct, hiddenzone_inputs['amino_acids'], hiddenzone_inputs['mstruct'])
-                        export_fructan = model.calculate_export(delta_lamina_mstruct, hiddenzone_inputs['fructan'], hiddenzone_inputs['mstruct'])
+                        remob_fructan = model.calculate_export(delta_lamina_mstruct, hiddenzone_inputs['fructan'], hiddenzone_inputs['mstruct'])
                         export_proteins = model.calculate_export(delta_lamina_mstruct, hiddenzone_inputs['proteins'], hiddenzone_inputs['mstruct'])
                         # Cytokinins in the newly visible mstruct
                         addition_cytokinins = model.calculate_cytokinins(delta_lamina_mstruct,curr_visible_lamina_inputs['cytokinins'], curr_visible_lamina_inputs['mstruct'])
@@ -218,7 +219,7 @@ class Simulation(object):
                         curr_visible_lamina_outputs['Nstruct'] += delta_lamina_Nstruct
                         curr_visible_lamina_outputs['sucrose'] += export_sucrose
                         curr_visible_lamina_outputs['amino_acids'] += export_amino_acids
-                        curr_visible_lamina_outputs['fructan'] += export_fructan
+                        # curr_visible_lamina_outputs['fructan'] += 0
                         curr_visible_lamina_outputs['proteins'] += export_proteins
                         curr_visible_lamina_outputs['cytokinins'] += addition_cytokinins
 
@@ -236,7 +237,7 @@ class Simulation(object):
                         # Export of metabolite from hiddenzone towards emerged sheath
                         export_sucrose = model.calculate_export(delta_sheath_mstruct, hiddenzone_inputs['sucrose'], hiddenzone_inputs['mstruct'])
                         export_amino_acids = model.calculate_export(delta_sheath_mstruct, hiddenzone_inputs['amino_acids'], hiddenzone_inputs['mstruct'])
-                        export_fructan = model.calculate_export(delta_sheath_mstruct, hiddenzone_inputs['fructan'], hiddenzone_inputs['mstruct'])
+                        remob_fructan = model.calculate_export(delta_sheath_mstruct, hiddenzone_inputs['fructan'], hiddenzone_inputs['mstruct'])
                         export_proteins = model.calculate_export(delta_sheath_mstruct, hiddenzone_inputs['proteins'], hiddenzone_inputs['mstruct'])
                         addition_cytokinins = model.calculate_cytokinins(delta_sheath_mstruct, curr_visible_sheath_inputs['cytokinins'], curr_visible_sheath_inputs['mstruct'])
 
@@ -246,7 +247,7 @@ class Simulation(object):
                         curr_visible_sheath_outputs['Nstruct'] += delta_sheath_Nstruct
                         curr_visible_sheath_outputs['sucrose'] += export_sucrose
                         curr_visible_sheath_outputs['amino_acids'] += export_amino_acids
-                        curr_visible_sheath_outputs['fructan'] += export_fructan
+                        # curr_visible_sheath_outputs['fructan'] += 0
                         curr_visible_sheath_outputs['proteins'] += export_proteins
                         curr_visible_sheath_outputs['cytokinins'] += addition_cytokinins
                         self.outputs['elements'][visible_sheath_id] = curr_visible_sheath_outputs
@@ -265,8 +266,11 @@ class Simulation(object):
                 curr_hiddenzone_outputs['internode_enclosed_Nstruct'] += delta_internode_enclosed_Nstruct
                 curr_hiddenzone_outputs['mstruct'] = curr_hiddenzone_outputs['leaf_enclosed_mstruct'] + curr_hiddenzone_outputs['internode_enclosed_mstruct']
                 curr_hiddenzone_outputs['Nstruct'] = curr_hiddenzone_outputs['leaf_enclosed_Nstruct'] + curr_hiddenzone_outputs['internode_enclosed_Nstruct']
-                curr_hiddenzone_outputs['sucrose'] -= (curr_hiddenzone_outputs['sucrose_consumption_mstruct'] + curr_hiddenzone_outputs['Respi_growth'] + export_sucrose) # TODO: Add checks for negative sucrose value
-                curr_hiddenzone_outputs['amino_acids'] -= (curr_hiddenzone_outputs['AA_consumption_mstruct'] + export_amino_acids)  # TODO: Add checks for negative AA value
+                curr_hiddenzone_outputs['sucrose'] -= (curr_hiddenzone_outputs['sucrose_consumption_mstruct'] + curr_hiddenzone_outputs['Respi_growth'])
+                curr_hiddenzone_outputs['sucrose'] += remob_fructan
+                curr_hiddenzone_outputs['amino_acids'] -= (curr_hiddenzone_outputs['AA_consumption_mstruct'] + export_amino_acids)
+                curr_hiddenzone_outputs['proteins'] -=  export_proteins
+                # curr_hiddenzone_outputs['fructan'] -= 0
                 self.outputs['hiddenzone'][hiddenzone_id] = curr_hiddenzone_outputs
 
                 # Remobilisation at the end of leaf elongation
