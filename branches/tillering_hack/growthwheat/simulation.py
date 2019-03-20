@@ -99,7 +99,7 @@ class Simulation(object):
         self.inputs.clear()
         self.inputs.update(inputs)
 
-    def run(self):
+    def run(self, manual_cyto_init = None):
         # Copy the inputs into the output dict
         self.outputs.update({inputs_type: copy.deepcopy(all_inputs) for inputs_type, all_inputs in self.inputs.items() if inputs_type in {'hiddenzone', 'elements', 'roots'}})
 
@@ -211,7 +211,7 @@ class Simulation(object):
                         remob_fructan = model.calculate_export(delta_lamina_mstruct, hiddenzone_inputs['fructan'], hiddenzone_inputs['mstruct'])
                         export_proteins = model.calculate_export(delta_lamina_mstruct, hiddenzone_inputs['proteins'], hiddenzone_inputs['mstruct'])
                         # Cytokinins in the newly visible mstruct
-                        addition_cytokinins = model.calculate_cytokinins(delta_lamina_mstruct,curr_visible_lamina_inputs['cytokinins'], curr_visible_lamina_inputs['mstruct'])
+                        addition_cytokinins = model.calculate_cytokinins(delta_lamina_mstruct,curr_visible_lamina_inputs['cytokinins'], curr_visible_lamina_inputs['mstruct'], manual_cyto_init)
 
                         # Update of lamina outputs
                         curr_visible_lamina_outputs['mstruct'] += delta_lamina_mstruct
@@ -239,7 +239,7 @@ class Simulation(object):
                         export_amino_acids = model.calculate_export(delta_sheath_mstruct, hiddenzone_inputs['amino_acids'], hiddenzone_inputs['mstruct'])
                         remob_fructan = model.calculate_export(delta_sheath_mstruct, hiddenzone_inputs['fructan'], hiddenzone_inputs['mstruct'])
                         export_proteins = model.calculate_export(delta_sheath_mstruct, hiddenzone_inputs['proteins'], hiddenzone_inputs['mstruct'])
-                        addition_cytokinins = model.calculate_cytokinins(delta_sheath_mstruct, curr_visible_sheath_inputs['cytokinins'], curr_visible_sheath_inputs['mstruct'])
+                        addition_cytokinins = model.calculate_cytokinins(delta_sheath_mstruct, curr_visible_sheath_inputs['cytokinins'], curr_visible_sheath_inputs['mstruct'], manual_cyto_init)
 
                         # Update of sheath outputs
                         curr_visible_sheath_outputs['mstruct'] += delta_sheath_mstruct

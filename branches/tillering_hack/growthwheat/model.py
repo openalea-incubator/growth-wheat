@@ -185,7 +185,7 @@ def calculate_export(delta_mstruct, metabolite, hiddenzone_mstruct):
     """
     return delta_mstruct * max(0, (metabolite / hiddenzone_mstruct))
 
-def calculate_cytokinins(delta_mstruct, cytokinins, mstruct):
+def calculate_cytokinins(delta_mstruct, cytokinins, mstruct, manual_cyto_init):
     """Quantity of cytokins in the newly visible mstruct.
 
     :Parameters:
@@ -198,11 +198,14 @@ def calculate_cytokinins(delta_mstruct, cytokinins, mstruct):
     :Returns Type:
         :class:`float`
     """
+    cyto_init = 200
+    if manual_cyto_init is not None:
+        cyto_init = manual_cyto_init
     # default initial value
     if mstruct == 0:
-        res = delta_mstruct * 200 # TODO: Set according to protein concentration ?
+        res = delta_mstruct * cyto_init # TODO: Set according to protein concentration ?
     else:
-        res = delta_mstruct * 200#  (cytokinins / mstruct)
+        res = delta_mstruct * cyto_init#  (cytokinins / mstruct)
     return res
 
 def calculate_s_Nstruct_amino_acids(delta_hiddenzone_Nstruct, delta_lamina_Nstruct, delta_sheath_Nstruct):
@@ -272,7 +275,11 @@ def calculate_roots_mstruct_growth(sucrose, amino_acids, mstruct, delta_t):
     """
     conc_sucrose = max(0, sucrose/mstruct)
 
-    mstruct_C_growth = (conc_sucrose * parameters.VMAX_ROOTS_GROWTH) / (conc_sucrose + parameters.K_ROOTS_GROWTH) * delta_t * mstruct     #: root growth in C (µmol of C)
+    Vmax =  parameters.VMAX_ROOTS_GROWTH
+    N = 1.8
+
+    #mstruct_C_growth = (conc_sucrose * parameters.VMAX_ROOTS_GROWTH) / (conc_sucrose + parameters.K_ROOTS_GROWTH) * delta_t * mstruct     #: root growth in C (µmol of C)
+    mstruct_C_growth = ( (conc_sucrose**N) * Vmax) / ( (conc_sucrose**N) + (parameters.K_ROOTS_GROWTH**N) ) * delta_t * mstruct
     mstruct_growth = (mstruct_C_growth*1E-6 * parameters.C_MOLAR_MASS) / parameters.RATIO_C_MSTRUCT_ROOTS                                 #: root growth (g of structural dry mass)
     Nstruct_growth = mstruct_growth * parameters.RATIO_N_MSTRUCT_ROOTS_                                                                   #: root growth in N (g of structural dry mass)
     Nstruct_N_growth = min(amino_acids, (Nstruct_growth / parameters.N_MOLAR_MASS)*1E6)                                                   #: root growth in nitrogen (µmol N)
