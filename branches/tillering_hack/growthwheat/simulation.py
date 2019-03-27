@@ -284,6 +284,7 @@ class Simulation(object):
                         self.outputs['elements'][hidden_sheath_id] = new_sheath_outputs
                     curr_hidden_sheath_outputs = self.outputs['elements'][hidden_sheath_id]
                     curr_hidden_sheath_outputs['mstruct'] = curr_hiddenzone_outputs['leaf_enclosed_mstruct']
+                    curr_hidden_sheath_outputs['max_mstruct'] = curr_hiddenzone_outputs['leaf_enclosed_mstruct']
                     curr_hidden_sheath_outputs['Nstruct'] = curr_hiddenzone_outputs['leaf_enclosed_Nstruct']
                     curr_hidden_sheath_outputs['sucrose'] = curr_hiddenzone_outputs['sucrose'] * share
                     curr_hidden_sheath_outputs['amino_acids'] = curr_hiddenzone_outputs['amino_acids'] * share
