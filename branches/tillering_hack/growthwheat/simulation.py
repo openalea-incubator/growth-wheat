@@ -99,7 +99,7 @@ class Simulation(object):
         self.inputs.clear()
         self.inputs.update(inputs)
 
-    def run(self, manual_cyto_init = None):
+    def run(self, manual_cyto_init = None, opt_postflo=False):
         # Copy the inputs into the output dict
         self.outputs.update({inputs_type: copy.deepcopy(all_inputs) for inputs_type, all_inputs in self.inputs.items() if inputs_type in {'hiddenzone', 'elements', 'roots'}})
 
@@ -336,7 +336,7 @@ class Simulation(object):
             curr_root_outputs = all_roots_outputs[root_id]
             # Growth
             mstruct_C_growth, mstruct_growth, Nstruct_growth, Nstruct_N_growth = model.calculate_roots_mstruct_growth(root_inputs['sucrose'], root_inputs['amino_acids'],
-                                                                                                                      root_inputs['mstruct'], delta_teq)
+                                                                                                                      root_inputs['mstruct'], delta_teq, opt_postflo)
             # Respiration growth
             curr_root_outputs['Respi_growth'] = RespirationModel.R_growth(mstruct_C_growth)
             # Update of root outputs

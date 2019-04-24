@@ -258,7 +258,7 @@ def calculate_s_mstruct_sucrose(delta_hiddenzone_mstruct, delta_lamina_mstruct, 
 """
 
 # Roots
-def calculate_roots_mstruct_growth(sucrose, amino_acids, mstruct, delta_t):
+def calculate_roots_mstruct_growth(sucrose, amino_acids, mstruct, delta_t, opt_postflo):
     """Root structural dry mass growth integrated over delta_t
 
     : Parameters:
@@ -266,6 +266,7 @@ def calculate_roots_mstruct_growth(sucrose, amino_acids, mstruct, delta_t):
         - `amino_acids` (:class:`float`) - Amount of amino acids in roots (µmol N)
         - `mstruct` (:class:`float`) - Root structural mass (g)
         - 'delta_teq'(:class:`float`) - Time compensated for the effect of temperature - Time equivalent at Tref (s)
+        - 'opt_postflo'(:class:`bool`) - Option : True to run a simulation with postflo parameter
 
     : Returns:
         mstruct_C_growth (µmol C), mstruct_growth (g), Nstruct_growth (g), Nstruct_N_growth (µmol N)
@@ -275,7 +276,10 @@ def calculate_roots_mstruct_growth(sucrose, amino_acids, mstruct, delta_t):
     """
     conc_sucrose = max(0, sucrose/mstruct)
 
-    Vmax =  parameters.VMAX_ROOTS_GROWTH
+    if opt_postflo:
+        Vmax =  parameters.VMAX_ROOTS_GROWTH_POSTFLO
+    else :
+        Vmax = parameters.VMAX_ROOTS_GROWTH_PREFLO
     N = 1.8
 
     #mstruct_C_growth = (conc_sucrose * parameters.VMAX_ROOTS_GROWTH) / (conc_sucrose + parameters.K_ROOTS_GROWTH) * delta_t * mstruct     #: root growth in C (µmol of C)
