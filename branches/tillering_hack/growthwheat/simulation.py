@@ -339,11 +339,12 @@ class Simulation(object):
                                                                                                                       root_inputs['mstruct'], delta_teq, opt_postflo)
             # Respiration growth
             curr_root_outputs['Respi_growth'] = RespirationModel.R_growth(mstruct_C_growth)
+
             # Update of root outputs
             curr_root_outputs['mstruct'] += mstruct_growth
-            curr_root_outputs['sucrose_consumption_mstruct'] = mstruct_C_growth
             curr_root_outputs['AA_consumption_mstruct'] = Nstruct_N_growth
-            curr_root_outputs['sucrose'] -= (mstruct_C_growth + curr_root_outputs['Respi_growth'])
+            curr_root_outputs['sucrose_consumption_mstruct'] = model.calculate_roots_s_mstruct_sucrose(mstruct_growth, Nstruct_N_growth)
+            curr_root_outputs['sucrose'] -= (curr_root_outputs['sucrose_consumption_mstruct'] + curr_root_outputs['Respi_growth'])
             curr_root_outputs['Nstruct'] += Nstruct_growth
             curr_root_outputs['amino_acids'] -= Nstruct_N_growth
             curr_root_outputs['rate_mstruct_growth'] = mstruct_growth / self.delta_t

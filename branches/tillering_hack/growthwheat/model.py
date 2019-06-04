@@ -289,3 +289,21 @@ def calculate_roots_mstruct_growth(sucrose, amino_acids, mstruct, delta_t, opt_p
     Nstruct_N_growth = min(amino_acids, (Nstruct_growth / parameters.N_MOLAR_MASS)*1E6)                                                   #: root growth in nitrogen (µmol N)
 
     return mstruct_C_growth, mstruct_growth, Nstruct_growth, Nstruct_N_growth
+
+def calculate_roots_s_mstruct_sucrose(delta_roots_mstruct, s_Nstruct_amino_acids_N):
+    """Consumption of sucrose for the calculated mstruct growth (µmol C consumed by mstruct growth)
+
+    :Parameters:
+        - `delta_roots_mstruct` (:class:`float`) - mstruct growth of the roots (g)
+        - `s_Nstruct_amino_acids_N` (:class:`float`) - Total amino acid consumption (µmol N) due to Nstruct (µmol N)
+    :Returns:
+        Sucrose consumption (µmol C)
+    :Returns Type:
+        :class:`float`
+    """
+    s_Nstruct_amino_acids = s_Nstruct_amino_acids_N / parameters.AMINO_ACIDS_N_RATIO   #: µmol of AA
+    s_mstruct_amino_acids_C = s_Nstruct_amino_acids * parameters.AMINO_ACIDS_C_RATIO   #: µmol of C coming from AA
+    s_mstruct_C = delta_roots_mstruct * parameters.RATIO_SUCROSE_MSTRUCT / parameters.C_MOLAR_MASS * 1E6  #: Total C used for mstruct growth (µmol C)
+    s_mstruct_sucrose_C = s_mstruct_C - s_mstruct_amino_acids_C                        #: µmol of coming from sucrose
+
+    return s_mstruct_sucrose_C
